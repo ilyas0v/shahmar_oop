@@ -34,4 +34,19 @@ class DB
     {
         return $this->conn;
     }
+
+
+
+    public static function fetchAll( $tableName )
+    {
+        $db = DB::get_instance();
+        $conn = $db->get_connection();
+
+        $sth = $conn->prepare("SELECT * FROM " . $tableName );
+
+        $sth->execute();
+        $result = $sth->fetchAll();
+
+        return $result;
+    }
 }

@@ -6,28 +6,26 @@ use App\Core\DB;
 
 class Model
 {
-    protected $table = null;
+    protected static $table = null;
     protected $db;
     protected $conn;
 
 
-    public function __construct()
-    {
-        $this->db   = DB::get_instance();
-        $this->conn = $this->db->get_connection();
-    }
+    public static function __callStatic($name, $arguments)
+	{
+		$m = new Model( static::class );
+
+		if( method_exists( $m, $name ) )
+		{
+			return call_user_func_array( [$m, $name], $arguments );
+		}
+
+	}
 
 
     public function all()
     {
-
-        $sth = $this->conn->prepare("SELECT * FROM " . $this->getTable() );
-
-        $sth->execute();
-        $result = $sth->fetchAll();
-
-        return $result;
-
+        return DB::fetchAll( self::getTable() );
     }
 
 
@@ -43,11 +41,11 @@ class Model
     }
 
 
-    public function getTable()
+    public static function getTable()
     {
-        if( $this->table != null )
+        if( self::$table != null )
         {
-            return $this->table;
+            return self::$table;
         }
 
         $cls = get_called_class();

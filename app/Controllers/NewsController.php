@@ -11,7 +11,7 @@ class NewsController
 
     public function index()
     {
-        $news = (new News)->all();
+        $news = News::all();
 
         echo json_encode($news);
     }
