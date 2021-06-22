@@ -4,7 +4,7 @@ namespace App\Core;
 
 use App\Core\DB;
 
-class Model
+class Model extends QueryBuilder
 {
     protected static $table = null;
     protected $db;
@@ -13,7 +13,7 @@ class Model
 
     public static function __callStatic($name, $arguments)
 	{
-		$m = new Model( static::class );
+		$m = new QueryBuilder( static::class );
 
 		if( method_exists( $m, $name ) )
 		{
@@ -22,38 +22,5 @@ class Model
 
 	}
 
-
-    public function all()
-    {
-        return DB::fetchAll( self::getTable() );
-    }
-
-
-
-    public function find( $id )
-    {
-        $sth = $this->conn->prepare("SELECT * FROM " . $this->getTable() . " WHERE id = $id" );
-
-        $sth->execute();
-        $result = $sth->fetchAll();
-
-        return $result;
-    }
-
-
-    public static function getTable()
-    {
-        if( self::$table != null )
-        {
-            return self::$table;
-        }
-
-        $cls = get_called_class();
-
-        $cls = explode( '\\', $cls );
-
-        return strtolower(end($cls));
-
-    }
 
 }
